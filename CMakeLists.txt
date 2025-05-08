@@ -30,13 +30,13 @@ cmake_minimum_required(VERSION 3.13)
 #
 
 option(USE_SD "Build in SD support" OFF)
-set(SD_TX 3 CACHE STRING "SD SPI TX pin")
-set(SD_RX 4 CACHE STRING "SD SPI RX pin")
-set(SD_SCK 2 CACHE STRING "SD SPI SCK pin")
-set(SD_CS 5 CACHE STRING "SD SPI CS pin")
+set(SD_TX 19 CACHE STRING "SD SPI TX pin")
+set(SD_RX 16 CACHE STRING "SD SPI RX pin")
+set(SD_SCK 18 CACHE STRING "SD SPI SCK pin")
+set(SD_CS 17 CACHE STRING "SD SPI CS pin")
 set(SD_MHZ 5 CACHE STRING "SD SPI speed in MHz")
-option(USE_VGA_RES "Video uses VGA (640x480) resolution" OFF)
-set(VIDEO_PIN 18 CACHE STRING "Video GPIO base pin (followed by VS, CLK, HS)")
+option(USE_PICOCALC_RES "Video uses native lcd (320x320) resolution" OFF)
+#set(VIDEO_PIN 18 CACHE STRING "Video GPIO base pin (followed by VS, CLK, HS)")
 
 # See below, -DMEMSIZE=<size in KB> will configure umac's memory size,
 # overriding defaults.
@@ -51,10 +51,10 @@ project(firmware)
 pico_sdk_init()
 
 # For TUSB host stuff:
-set(FAMILY rp2040)
-set(BOARD raspberry_pi_pico)
+#set(FAMILY rp2040)
+#set(BOARD raspberry_pi_pico)
 
-set(TINYUSB_PATH ${PICO_SDK_PATH}/lib/tinyusb)
+#set(TINYUSB_PATH ${PICO_SDK_PATH}/lib/tinyusb)
 
 # umac subproject (and Musashi sub-subproject)
 set(UMAC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/external/umac)
@@ -86,10 +86,10 @@ if (USE_SD)
    add_compile_definitions(SD_TX=${SD_TX} SD_RX=${SD_RX} SD_SCK=${SD_SCK} SD_CS=${SD_CS} SD_MHZ=${SD_MHZ})
 endif()
 
-if (USE_VGA_RES)
-   add_compile_definitions(USE_VGA_RES=1)
-   add_compile_definitions(DISP_WIDTH=640)
-   add_compile_definitions(DISP_HEIGHT=480)
+if (USE_PICOCALC_RES)
+   add_compile_definitions(USE_PICOCALC_RES=1)
+   add_compile_definitions(DISP_WIDTH=320)
+   add_compile_definitions(DISP_HEIGHT=320)
 else()
    add_compile_definitions(DISP_WIDTH=512)
    add_compile_definitions(DISP_HEIGHT=342)
@@ -102,6 +102,9 @@ if (TARGET tinyusb_device)
     src/video.c
     src/kbd.c
     src/hid.c
+
+    src/lcd.c
+    src/keyboard.c
     ${EXTRA_SD_SRC}
 
     ${UMAC_SOURCES}
@@ -120,11 +123,13 @@ if (TARGET tinyusb_device)
   target_link_libraries(firmware
     pico_stdlib
     pico_multicore
-    tinyusb_host
-    tinyusb_board
+    #tinyusb_host
+    #tinyusb_board
     hardware_dma
     hardware_pio
     hardware_sync
+    hardware_spi
+    hardware_i2c
     ${EXTRA_SD_LIB}
     )
 
@@ -136,9 +141,11 @@ if (TARGET tinyusb_device)
     incbin
     )
 
-  pico_generate_pio_header(firmware ${CMAKE_CURRENT_LIST_DIR}/src/pio_video.pio)
-
+  pico_enable_stdio_usb(firmware 0)
   pico_enable_stdio_uart(firmware 1)
+
+
+  pico_generate_pio_header(firmware ${CMAKE_CURRENT_LIST_DIR}/src/pio_video.pio)
 
   # Needed for UF2:
   pico_add_extra_outputs(firmware)

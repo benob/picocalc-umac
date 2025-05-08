@@ -1,6 +1,35 @@
-# Pico Micro Mac (pico-umac)
+# PicoCalc Micro Mac (picocalc-umac)
 
-v0.21 20 December 2024
+This is a macintosh emulator for the picocalc.
+Use right shift to toggle mouse, hold space to slow mouse down
+SD support does not work. You need to build an image as explained below.
+You need to match the MEMSIZE, DISP_WIDTH, DISP_HEIGHT parameters with what you pass to cmake.
+
+```
+ROM='roms/4D1F8172 - MacPlus v3.ROM'
+DISK='disks/system3.0-finder5.1-en.img'
+        
+# build images
+make -C external/umac clean
+make -C external/umac MEMSIZE=128 DISP_WIDTH=320 DISP_HEIGHT=320
+./external/umac/main -r "$ROM" -W rom.bin
+xxd -i < rom.bin > incbin/umac-rom.h
+xxd -i < "$DISK" > incbin/umac-disc.h
+ 
+# test emulator
+./external/umac/main -r "$ROM" -d "$DISK"
+
+# build for pico
+mkdir build
+cd build
+cmake .. -DUSE_PICOCALC_RES=ON -DMEMSIZE=128 -DPICO_BOARD=pico
+make
+cp firmware.uf2 /path/to/pico
+```
+
+---
+
+Based on pico-umac v0.21 20 December 2024, by Matt Evans
 
 
 This project embeds the [umac Mac 128K

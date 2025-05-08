@@ -40,8 +40,11 @@
 #include "video.h"
 #include "kbd.h"
 
-#include "bsp/rp2040/board.h"
-#include "tusb.h"
+//#include "bsp/rp2040/board.h"
+//#include "tusb.h"
+
+#include "keyboard.h"
+#include "lcd.h"
 
 #include "umac.h"
 
@@ -265,21 +268,27 @@ static void     core1_main()
 
 int     main()
 {
-        set_sys_clock_khz(250*1000, true);
+        set_sys_clock_khz(210*1000, true);
+        clock_configure(clk_peri, 0, CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_CLK_SYS, 210 * 1000, 210 * 1000);
 
-	stdio_init_all();
+  stdio_init_all();
+
+  lcd_init();
+  lcd_clear();
+  lcd_on();
+  keyboard_init();
         io_init();
 
         multicore_launch_core1(core1_main);
 
-	printf("Starting, init usb\n");
-        tusb_init();
+	//printf("Starting, init usb\n");
+        //tusb_init();
 
         /* This happens on core 0: */
 	while (true) {
-                tuh_task();
                 hid_app_task();
                 poll_led_etc();
+                video_update();
 	}
 
 	return 0;
