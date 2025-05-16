@@ -29,7 +29,7 @@ cp firmware.uf2 /path/to/pico
 
 ---
 
-Based on pico-umac v0.21 20 December 2024, by Matt Evans
+Based on [pico-umac](https://github.com/evansm7/pico-mac) v0.21 20 December 2024, by Matt Evans
 
 
 This project embeds the [umac Mac 128K
