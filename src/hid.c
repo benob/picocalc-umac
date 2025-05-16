@@ -31,7 +31,7 @@
 int cursor_x = 0;
 int cursor_y = 0;
 int cursor_button = 0;
-int mouse_mode = 0;
+int mouse_mode = 1;
 
 static int slow = 0, mouse_delta_x = 0, mouse_delta_y = 0;
 
@@ -64,7 +64,7 @@ void hid_app_task(void)
       if (event.state == KEY_STATE_PRESSED || event.state == KEY_STATE_RELEASED) kbd_queue_push(event.code, event.state == KEY_STATE_PRESSED);
     }
   }
-  cursor_x += mouse_delta_x * (slow ? 2 : 8);
-  cursor_y += mouse_delta_y * (slow ? 2 : 8);
+  cursor_x += mouse_delta_x * (slow ? 2 : 5);
+  cursor_y += mouse_delta_y * (slow ? 2 : 5);
 }
-
+//

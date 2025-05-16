@@ -37,14 +37,24 @@ void    video_init(uint32_t *framebuffer) {
 
 int video_offset_x = 0, video_offset_y = 0;
 
+// https://github.com/evansm7/umac/pull/16/commits/d90f36714560389c47107c3fc3b3463a5ca09c14
+// read mouse position directly from emulator memory:
+// x = RAM_RD16(0x82a)
+// y = RAM_RD16(0x828)
+#include "machw.h"
+
 extern int mouse_mode, cursor_x, cursor_y;
 
 void video_update() {
+  int mouse_x = RAM_RD16(0x82a);
+  int mouse_y = RAM_RD16(0x828);
   // adjust display position
-  while (cursor_x < video_offset_x && video_offset_x > 0) video_offset_x--;
-  while (cursor_x > video_offset_x + 320 && video_offset_x < DISP_WIDTH - 320) video_offset_x++;
-  while (cursor_y < video_offset_y && video_offset_y > 0) video_offset_y--;
-  while (cursor_y > video_offset_y + 320 && video_offset_y < DISP_HEIGHT - 320) video_offset_y++;
+  if (mouse_x >= 0 && mouse_x < DISP_WIDTH && mouse_y >= 0 && mouse_y < DISP_HEIGHT) {
+    while (mouse_x < video_offset_x && video_offset_x > 0) video_offset_x--;
+    while (mouse_x > video_offset_x + 320 && video_offset_x < DISP_WIDTH - 320) video_offset_x++;
+    while (mouse_y < video_offset_y && video_offset_y > 0) video_offset_y--;
+    while (mouse_y > video_offset_y + 320 && video_offset_y < DISP_HEIGHT - 320) video_offset_y++;
+  }
 
   // draw row by row
   uint16_t row[320];
@@ -64,6 +74,7 @@ void video_update() {
   }
 
   // mouse indicator
-  if (mouse_mode) lcd_draw_char(4, 319 - 12, 0, RGB(255, 0, 0), 'm');
+  //if (mouse_mode) lcd_draw_char(4, 319 - 12, 0, RGB(255, 0, 0), 'm');
+  //lcd_printf(4, 319 - 12, 0, RGB(255, 0, 0), "x=%d y=%d\n", mouse_x, mouse_y);
 }
 

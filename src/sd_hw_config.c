@@ -41,16 +41,16 @@ socket, which SPI it is driven by, and how it is wired.
 static spi_t spis[] = {  // One for each SPI.
     {
         .hw_inst = spi0,  // SPI component
-        .miso_gpio = SD_RX, // GPIO number (not pin number)
-        .mosi_gpio = SD_TX,
-        .sck_gpio = SD_SCK,
+        .miso_gpio = 16, // GPIO number (not pin number)
+        .mosi_gpio = 19,
+        .sck_gpio = 18,
 
-        .set_drive_strength = true,
+        .set_drive_strength = false,
         .mosi_gpio_drive_strength = GPIO_DRIVE_STRENGTH_8MA,
         .sck_gpio_drive_strength = GPIO_DRIVE_STRENGTH_8MA,
 
         // One of my cards doesn't seem to work beyond 5MHz :(
-        .baud_rate = SD_MHZ * 1000 * 1000,
+        .baud_rate = 32 * 1000 * 1000,
     }
 };
 
@@ -59,10 +59,10 @@ static sd_card_t sd_cards[] = {  // One for each SD card
     {
         .pcName = "0:",   // Name used to mount device
         .spi = &spis[0],  // Pointer to the SPI driving this card
-        .ss_gpio = SD_CS, // The SPI slave select GPIO for this SD card
+        .ss_gpio = 17, // The SPI slave select GPIO for this SD card
         .set_drive_strength = true,
         .ss_gpio_drive_strength = GPIO_DRIVE_STRENGTH_8MA,
-        .use_card_detect = false,
+        .use_card_detect = true,
         .card_detected_true = -1  // What the GPIO read returns when a card is
                                   // present. Use -1 if there is no card detect.
     }};

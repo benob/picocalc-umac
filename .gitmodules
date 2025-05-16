@@ -4,3 +4,6 @@
 [submodule "external/no-OS-FatFS-SD-SPI-RPi-Pico"]
 	path = external/no-OS-FatFS-SD-SPI-RPi-Pico
 	url = https://github.com/evansm7/no-OS-FatFS-SD-SPI-RPi-Pico.git
+[submodule "external/pico_fatfs"]
+	path = external/pico_fatfs
+	url = https://github.com/elehobica/pico_fatfs.git

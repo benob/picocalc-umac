@@ -29,7 +29,7 @@ cmake_minimum_required(VERSION 3.13)
 # directory with cmake, e.g. "cmake .. -DOPTION=true":
 #
 
-option(USE_SD "Build in SD support" OFF)
+option(USE_SD "Build in SD support" ON)
 set(SD_TX 19 CACHE STRING "SD SPI TX pin")
 set(SD_RX 16 CACHE STRING "SD SPI RX pin")
 set(SD_SCK 18 CACHE STRING "SD SPI SCK pin")
@@ -80,9 +80,10 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -DPICO -DMUSASHI_CNF=\\\"../include/m68k
 if (USE_SD)
    add_compile_definitions(USE_SD=1)
    set(FF_DISABLE_RTC ${PICO_RP2350})  # RP2350 doesn't have RTC, so disable it
-   add_subdirectory(external/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
-   set(EXTRA_SD_SRC src/sd_hw_config.c)
-   set(EXTRA_SD_LIB FatFs_SPI)
+   #add_subdirectory(external/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
+   add_subdirectory(external/pico_fatfs)
+   #set(EXTRA_SD_SRC src/sd_hw_config.c)
+   #set(EXTRA_SD_LIB FatFs_SPI)
    add_compile_definitions(SD_TX=${SD_TX} SD_RX=${SD_RX} SD_SCK=${SD_SCK} SD_CS=${SD_CS} SD_MHZ=${SD_MHZ})
 endif()
 
@@ -130,7 +131,8 @@ if (TARGET tinyusb_device)
     hardware_sync
     hardware_spi
     hardware_i2c
-    ${EXTRA_SD_LIB}
+    pico_fatfs
+    #${EXTRA_SD_LIB}
     )
 
   target_include_directories(firmware PRIVATE
