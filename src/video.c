@@ -26,13 +26,15 @@
  * SOFTWARE.
  */
 
+#include <string.h>
 #include <stdint.h>
 #include "lcd.h"
 
-static uint8_t *video_framebuffer;
+static uint8_t *video_framebuffer = NULL;
 
 void    video_init(uint32_t *framebuffer) {
   video_framebuffer = (uint8_t*) framebuffer;
+  memset(video_framebuffer, DISP_WIDTH * DISP_HEIGHT / 8, 0);
 }
 
 int video_offset_x = 0, video_offset_y = 0;
@@ -46,6 +48,9 @@ int video_offset_x = 0, video_offset_y = 0;
 extern int mouse_mode, cursor_x, cursor_y;
 
 void video_update() {
+
+  if (video_framebuffer == NULL) return;
+
   int mouse_x = RAM_RD16(0x82a);
   int mouse_y = RAM_RD16(0x828);
   // adjust display position

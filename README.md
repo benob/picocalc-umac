@@ -27,6 +27,8 @@ make
 cp firmware.uf2 /path/to/pico
 ```
 
+Instead of booting the included DISK, you can put a single disk image on the SD card, named umac0.img in the root.
+
 ---
 
 Based on [pico-umac](https://github.com/evansm7/pico-mac) v0.21 20 December 2024, by Matt Evans

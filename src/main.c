@@ -153,6 +153,7 @@ static void     poll_umac()
 #if USE_SD
 static int      disc_do_read(void *ctx, uint8_t *data, unsigned int offset, unsigned int len)
 {
+        printf("sd read %p %d %d\n", data, offset, len);
         FIL *fp = (FIL *)ctx;
         f_lseek(fp, offset);
         unsigned int did_read = 0;
@@ -166,6 +167,7 @@ static int      disc_do_read(void *ctx, uint8_t *data, unsigned int offset, unsi
 
 static int      disc_do_write(void *ctx, uint8_t *data, unsigned int offset, unsigned int len)
 {
+        printf("sd write %p %d %d\n", data, offset, len);
         FIL *fp = (FIL *)ctx;
         f_lseek(fp, offset);
         unsigned int did_write = 0;
@@ -218,6 +220,10 @@ static void     disc_setup(disc_descr_t discs[DISC_NUM_DRIVES])
     .pullup = true,
   };
   pico_fatfs_set_config(&config);
+  bool spi_configured = pico_fatfs_set_config(&config);
+  if (!spi_configured) {
+      pico_fatfs_config_spi_pio(pio0, 0);  // PIO, sm
+  }
   
   FRESULT result;
   result = f_mount(&fatfs, "", 0);
@@ -292,7 +298,7 @@ static void     disc_setup(disc_descr_t discs[DISC_NUM_DRIVES])
          * writing text to the framebuffer and checking kbd_queue_*()
          * for user input.
          */
-        printf("loaded SD\n");
+        printf("loaded SD (size=%ld)\n", discs[0].size);
         return;
 
 no_sd:
