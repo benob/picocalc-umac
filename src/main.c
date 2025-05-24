@@ -44,7 +44,7 @@
 //#include "tusb.h"
 
 #include "keyboard.h"
-#include "lcd.h"
+#include "lcd_3bit.h"
 
 #include "umac.h"
 
@@ -83,7 +83,7 @@ static void     io_init()
         gpio_set_dir(GPIO_LED_PIN, GPIO_OUT);
 }
 
-static void     poll_led_etc()
+/*static void     poll_led_etc()
 {
         static int led_on = 0;
         static absolute_time_t last = 0;
@@ -95,7 +95,7 @@ static void     poll_led_etc()
                 led_on ^= 1;
                 gpio_put(GPIO_LED_PIN, led_on);
         }
-}
+}*/
 
 static int umac_cursor_x = 0;
 static int umac_cursor_y = 0;
@@ -334,8 +334,9 @@ static void     core1_main()
 
 int     main()
 {
-        //set_sys_clock_khz(210*1000, true);
-        //clock_configure(clk_peri, 0, CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_CLK_SYS, 210 * 1000, 210 * 1000);
+  // overclock at 210MHz
+  //set_sys_clock_khz(210*1000, true);
+  //clock_configure(clk_peri, 0, CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_CLK_SYS, 210 * 1000, 210 * 1000);
 
   stdio_init_all();
 
@@ -352,8 +353,8 @@ int     main()
 
         /* This happens on core 0: */
 	while (true) {
-                hid_app_task();
-                poll_led_etc();
+                //hid_app_task();
+                //poll_led_etc();
                 video_update();
 	}
 

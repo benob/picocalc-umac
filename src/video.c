@@ -26,9 +26,10 @@
  * SOFTWARE.
  */
 
+#include <stdio.h>
 #include <string.h>
 #include <stdint.h>
-#include "lcd.h"
+#include "lcd_3bit.h"
 
 static uint8_t *video_framebuffer = NULL;
 
@@ -47,7 +48,7 @@ int video_offset_x = 0, video_offset_y = 0;
 
 extern int mouse_mode, cursor_x, cursor_y;
 
-void video_update() {
+/*void video_update_rgb565() {
 
   if (video_framebuffer == NULL) return;
 
@@ -76,6 +77,45 @@ void video_update() {
       }
     }       
     lcd_draw(row, 0, y, 320, 1);
+  }
+
+  // mouse indicator
+  //if (mouse_mode) lcd_draw_char(4, 319 - 12, 0, RGB(255, 0, 0), 'm');
+  //lcd_printf(4, 319 - 12, 0, RGB(255, 0, 0), "x=%d y=%d\n", mouse_x, mouse_y);
+}*/
+
+void hid_app_task(void);
+
+void video_update() {
+
+  if (video_framebuffer == NULL) return;
+
+  int mouse_x = RAM_RD16(0x82a);
+  int mouse_y = RAM_RD16(0x828);
+  // adjust display position
+  if (mouse_x >= 0 && mouse_x < DISP_WIDTH && mouse_y >= 0 && mouse_y < DISP_HEIGHT) {
+    while (mouse_x < video_offset_x && video_offset_x > 0) video_offset_x--;
+    while (mouse_x > video_offset_x + 320 && video_offset_x < DISP_WIDTH - 320) video_offset_x++;
+    while (mouse_y < video_offset_y && video_offset_y > 0) video_offset_y--;
+    while (mouse_y > video_offset_y + 320 && video_offset_y < DISP_HEIGHT - 320) video_offset_y++;
+  }
+
+  // draw row by row
+  uint8_t row[160];
+  for (int y = 0; y < 320; y++) {
+    uint8_t* fb_out = row;
+    for (int x = 0; x < 320; x += 16) {
+      uint8_t plo = video_framebuffer[(x + video_offset_x)/8 + ((y + video_offset_y) * DISP_WIDTH/8) + 0];
+      uint8_t phi = video_framebuffer[(x + video_offset_x)/8 + ((y + video_offset_y) * DISP_WIDTH/8) + 1];
+      for (int i = 0; i < 8; i+=2) {
+        *fb_out++ = ((plo & (0x80 >> i)) ? 0 : 56) | ((plo & (0x80 >> (i + 1))? 0 : 7));
+      }
+      for (int i = 0; i < 8; i+=2) {
+        *fb_out++ = ((phi & (0x80 >> i)) ? 0 : 56) | ((phi & (0x80 >> (i + 1))? 0 : 7));
+      }
+    }       
+    lcd_draw(row, 0, y, 320, 1);
+    if (y % 80 == 0) hid_app_task(); // check for key presses more often
   }
 
   // mouse indicator

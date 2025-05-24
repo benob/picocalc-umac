@@ -48,7 +48,7 @@ void hid_app_task(void)
           case KEY_UP: mouse_delta_y = -1; break;
           case KEY_DOWN: mouse_delta_y = 1; break;
           case KEY_ENTER: cursor_button = 1; break;
-          case KEY_SPACE: slow = 1; break;
+          //case KEY_SPACE: slow = 1 - slow; break;
         }
       } else if (event.state == KEY_STATE_RELEASED) {
         switch (event.code) {
@@ -57,14 +57,14 @@ void hid_app_task(void)
           case KEY_UP: 
           case KEY_DOWN: mouse_delta_y = 0; break;
           case KEY_ENTER: cursor_button = 0; break;
-          case KEY_SPACE: slow = 0; break;
+          case KEY_SPACE: slow = 1 - slow; break;
         }
       }
     } else {
       if (event.state == KEY_STATE_PRESSED || event.state == KEY_STATE_RELEASED) kbd_queue_push(event.code, event.state == KEY_STATE_PRESSED);
     }
   }
-  cursor_x += mouse_delta_x * (slow ? 2 : 5);
-  cursor_y += mouse_delta_y * (slow ? 2 : 5);
+  cursor_x += mouse_delta_x * (slow ? 1 : 2);
+  cursor_y += mouse_delta_y * (slow ? 1 : 2);
 }
 //

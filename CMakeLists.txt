@@ -83,7 +83,6 @@ if (USE_SD)
    #add_subdirectory(external/no-OS-FatFS-SD-SPI-RPi-Pico/FatFs_SPI build)
    add_subdirectory(external/pico_fatfs)
    #set(EXTRA_SD_SRC src/sd_hw_config.c)
-   #set(EXTRA_SD_LIB FatFs_SPI)
    add_compile_definitions(SD_TX=${SD_TX} SD_RX=${SD_RX} SD_SCK=${SD_SCK} SD_CS=${SD_CS} SD_MHZ=${SD_MHZ})
 endif()
 
@@ -104,7 +103,7 @@ if (TARGET tinyusb_device)
     src/kbd.c
     src/hid.c
 
-    src/lcd.c
+    src/lcd_3bit.c
     src/keyboard.c
     ${EXTRA_SD_SRC}
 
@@ -119,7 +118,7 @@ if (TARGET tinyusb_device)
   add_custom_target(prepare_umac
     DEPENDS ${UMAC_MUSASHI_PATH}/m68kops.c
     )
-  add_dependencies(firmware prepare_umac)
+  #add_dependencies(firmware prepare_umac)
 
   target_link_libraries(firmware
     pico_stdlib
@@ -132,7 +131,6 @@ if (TARGET tinyusb_device)
     hardware_spi
     hardware_i2c
     pico_fatfs
-    #${EXTRA_SD_LIB}
     )
 
   target_include_directories(firmware PRIVATE
@@ -147,7 +145,8 @@ if (TARGET tinyusb_device)
   pico_enable_stdio_uart(firmware 1)
 
 
-  pico_generate_pio_header(firmware ${CMAKE_CURRENT_LIST_DIR}/src/pio_video.pio)
+  #pico_generate_pio_header(firmware ${CMAKE_CURRENT_LIST_DIR}/src/pio_video.pio)
+  pico_generate_pio_header(firmware ${CMAKE_CURRENT_LIST_DIR}/screen2/video.pio)
 
   # Needed for UF2:
   pico_add_extra_outputs(firmware)
