@@ -57,7 +57,7 @@ pico_sdk_init()
 #set(TINYUSB_PATH ${PICO_SDK_PATH}/lib/tinyusb)
 
 # umac subproject (and Musashi sub-subproject)
-set(UMAC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/external/umac)
+set(UMAC_PATH ${CMAKE_CURRENT_SOURCE_DIR}/external/umac_multidrive)
 set(UMAC_MUSASHI_PATH ${UMAC_PATH}/external/Musashi)
 set(UMAC_INCLUDE_PATHS ${UMAC_PATH}/include ${UMAC_MUSASHI_PATH})
 

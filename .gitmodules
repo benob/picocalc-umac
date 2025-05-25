@@ -1,6 +1,7 @@
-[submodule "external/umac"]
-	url = https://github.com/evansm7/umac
-	path = external/umac
 [submodule "external/pico_fatfs"]
 	path = external/pico_fatfs
 	url = https://github.com/elehobica/pico_fatfs.git
+[submodule "external/umac_multidrive"]
+	path = external/umac_multidrive
+	url = https://github.com/jepler/umac.git
+	branch = multidrive

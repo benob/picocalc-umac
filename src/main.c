@@ -239,12 +239,12 @@ static void     disc_setup(disc_descr_t discs[DISC_NUM_DRIVES])
     goto no_sd;
   }
 
-  discs[0].base = 0; // Means use R/W ops
-  discs[0].read_only = 0;
-  discs[0].size = f_size(&discfp);
-  discs[0].op_ctx = &discfp;
-  discs[0].op_read = disc_do_read;
-  discs[0].op_write = disc_do_write;
+  discs[1].base = 0; // Means use R/W ops
+  discs[1].read_only = 0;
+  discs[1].size = f_size(&discfp);
+  discs[1].op_ctx = &discfp;
+  discs[1].op_read = disc_do_read;
+  discs[1].op_write = disc_do_write;
 
         /*char *disc0_name;
         const char *disc0_ro_name = "umac0ro.img";
@@ -299,7 +299,7 @@ static void     disc_setup(disc_descr_t discs[DISC_NUM_DRIVES])
          * for user input.
          */
         printf("loaded SD (size=%ld)\n", discs[0].size);
-        return;
+        //return;
 
 no_sd:
 #endif
