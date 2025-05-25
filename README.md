@@ -1,33 +1,39 @@
 # PicoCalc Micro Mac (picocalc-umac)
 
 This is a macintosh emulator for the picocalc.
-Use right shift to toggle mouse, hold space to slow mouse down
-SD support does not work. You need to build an image as explained below.
+Use right shift to toggle mouse, toggle space to slow mouse down.
+
+You need to build an image as explained below.
 You need to match the MEMSIZE, DISP_WIDTH, DISP_HEIGHT parameters with what you pass to cmake.
+
+Note: we now use https://github.com/jepler/umac.git#multidrive to have support for a second disk.
+This allows putting data-only disks on SD-card.
 
 ```
 ROM='roms/4D1F8172 - MacPlus v3.ROM'
 DISK='disks/system3.0-finder5.1-en.img'
+UMAC=external/umac_multidrive
         
 # build images
-make -C external/umac clean
-make -C external/umac MEMSIZE=128 DISP_WIDTH=320 DISP_HEIGHT=320
-./external/umac/main -r "$ROM" -W rom.bin
+make -C "$UMAC" clean
+make -C "$UMAC"  MEMSIZE=208 DISP_WIDTH=512 DISP_HEIGHT=342
+"$UMAC"/main -r "$ROM" -W rom.bin
 xxd -i < rom.bin > incbin/umac-rom.h
 xxd -i < "$DISK" > incbin/umac-disc.h
  
-# test emulator
-./external/umac/main -r "$ROM" -d "$DISK"
+# optionally test emulator
+"$UMAC"/main -r "$ROM" -d "$DISK"
 
 # build for pico
 mkdir build
 cd build
-cmake .. -DUSE_PICOCALC_RES=ON -DMEMSIZE=128 -DPICO_BOARD=pico
+cmake .. -DUSE_PICOCALC_RES=OFF -DMEMSIZE=208 -DPICO_BOARD=pico
 make
-cp firmware.uf2 /path/to/pico
+cp firmware.uf2 /path/to/pico # after putting it in bootsel mode
 ```
 
-Instead of booting the included DISK, you can put a single disk image on the SD card, named umac0.img in the root.
+In addition to booting from the DISK in flash, you can put a single disk image on the SD card, named umac0.img in the root.
+It will be mounted at boot.
 
 ---
 
