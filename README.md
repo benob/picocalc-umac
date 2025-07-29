@@ -32,6 +32,7 @@ git submodule udpate --init --recursive
 ```
 
 The create a build directory, run cmake and make, then put the pico in bootsel mode and copy the generated uf2.
+Note that umac will be run to patch the rom. You need to quit it with ctrl-q or cmd-q.
 ```
 mkdir build
 cd build
@@ -52,7 +53,8 @@ cmake .. -DPICO_BOARD=pimoroni_pico_plus2_rp2350 -DMEMSIZE=4096 -DUSE_PSRAM=1 -D
 cmake .. -DPICO_BOARD=pico -DUSE_SD=OFF -DDISC0_PATH=discs/system3.3-finder5.5-en.img
 ```
 
-Note that PSRAM is substantially slower than SRAM.
+Remember that you need to regenerate umac-rom.h every time you change MEMSIZE, DISP_WIDTH, DISP_HEIGHT.
+Note that PSRAM is substantially slower than SRAM. Boot speed is slower (up to 10s) if MEMSIZE has been customized.
 
 ---
 # Original README follows:
