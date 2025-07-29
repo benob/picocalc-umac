@@ -1,41 +1,61 @@
 # PicoCalc Micro Mac (picocalc-umac)
 
-This is a macintosh emulator for the picocalc.
+This is a port of the umac classic macintosh emulator for the PicoCalc.
+Put a system disc as umac0.img at the root of the SD card. 
+Optionnaly put a data disc as umac1.img in the same directory.
+Booting can be a bit slow if memory size was customized.
 Use right shift to toggle mouse, toggle space to slow mouse down.
 
-You need to build an image as explained below.
-You need to match the MEMSIZE, DISP_WIDTH, DISP_HEIGHT parameters with what you pass to cmake.
+# Compiling
 
-Note: we now use https://github.com/jepler/umac.git#multidrive to have support for a second disk.
-This allows putting data-only disks on SD-card.
+This emulator targets three configurations:
+- pico1 (RP2040) with up to 208K of emulated RAM
+- pico2 (RP2350) with up to 384K of emulated RAM
+- pimoroni_pico_plus2 (RP2350) with PSRAM (up to 4M)
 
+Cmake options:
+- `-DMEMSIZE=128`: size of the mac memory
+- `-DDISP_WIDTH=512`: display width, will pan if not larger than physical display
+- `-DDISP_HEIGHT=342`: display height, will pan if not larger than physical display
+- `-DUSE_PICOCALC_RES=OFF`: shortcut to use resolution 320x320
+- `-DUSE_PSRAM=OFF`: use PSRAM instead of SRAM on a compatible device (the PSRAM included on PicoCalc is not compatible)
+- `-DPSRAM_PIN=47`: CS pin for PSRAM (only GPIO pins 0, 8, 19, 47 can be used with RP2350)
+- `-DUSE_SD=ON`: read discs from SD card (umac0.img and umac1.img), if not set, you need to provide the path to a disc to include in flash
+- `-DDISC0_PATH=path-to-disc0`: disc image path when not using the SD card
+- `-DROM_PATH=roms/4D1F8172 - MacPlus v3.ROM`: use custom rom (only 4D1F8172 is supported by umac)
+
+Building:
+
+First, make sure you have cloned submodules
 ```
-ROM='roms/4D1F8172 - MacPlus v3.ROM'
-DISK='disks/system3.0-finder5.1-en.img'
-UMAC=external/umac_multidrive
-        
-# build images
-make -C "$UMAC" clean
-make -C "$UMAC"  MEMSIZE=208 DISP_WIDTH=512 DISP_HEIGHT=342
-"$UMAC"/main -r "$ROM" -W rom.bin
-xxd -i < rom.bin > incbin/umac-rom.h
-xxd -i < "$DISK" > incbin/umac-disc.h
- 
-# optionally test emulator
-"$UMAC"/main -r "$ROM" -d "$DISK"
+git submodule udpate --init --recursive
+```
 
-# build for pico
+The create a build directory, run cmake and make, then put the pico in bootsel mode and copy the generated uf2.
+```
 mkdir build
 cd build
-cmake .. -DUSE_PICOCALC_RES=OFF -DMEMSIZE=208 -DPICO_BOARD=pico
+# pico1 with 208k of RAM
+cmake .. -DPICO_BOARD=pico -DMEMSIZE=208
 make
-cp firmware.uf2 /path/to/pico # after putting it in bootsel mode
+# after putting the pico in usbsel mode
+cp *.uf2 /path/to/RPI-RP2
 ```
 
-In addition to booting from the DISK in flash, you can put a single disk image on the SD card, named umac0.img in the root.
-It will be mounted at boot.
+More cmake examples:
+```
+# pico2 with 384k of RAM and 320x320 display
+cmake .. -DPICO_BOARD=pico2 -DMEMSIZE=384 -DDISP_WIDTH=320 -DDISP_HEIGHT=320
+# pimoroni pico plus 2 with 4096k of RAM through PSRAM
+cmake .. -DPICO_BOARD=pimoroni_pico_plus2_rp2350 -DMEMSIZE=4096 -DUSE_PSRAM=1 -DPSRAM_PIN=47
+# pico1 without SD support
+cmake .. -DPICO_BOARD=pico -DUSE_SD=OFF -DDISC0_PATH=discs/system3.3-finder5.5-en.img
+```
+
+Note that PSRAM is substantially slower than SRAM.
 
 ---
+# Original README follows:
 
 Based on [pico-umac](https://github.com/evansm7/pico-mac) v0.21 20 December 2024, by Matt Evans
 

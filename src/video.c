@@ -29,7 +29,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdarg.h>
+
+#include "video.h"
+
 #include "lcd_3bit.h"
+#include "font.h"
 
 static uint8_t *video_framebuffer = NULL;
 
@@ -121,5 +126,68 @@ void video_update() {
   // mouse indicator
   //if (mouse_mode) lcd_draw_char(4, 319 - 12, 0, RGB(255, 0, 0), 'm');
   //lcd_printf(4, 319 - 12, 0, RGB(255, 0, 0), "x=%d y=%d\n", mouse_x, mouse_y);
+}
+
+void fb_fill_rect(int x, int y, int width, int height, uint8_t color) {
+  if (video_framebuffer == NULL) return;
+
+  if (x < 0) {
+    width += x;
+    x = 0;
+  }
+  if (y < 0) {
+    height += y;
+    y = 0;
+  }
+  if (x + width > DISP_WIDTH) width = DISP_WIDTH - x;
+  if (y + height > DISP_HEIGHT) height = DISP_HEIGHT - y;
+
+  for (int j = y; j < y + height; ++j) {
+    for (int i = 0; i < width; ++i) {
+      int offset = j * DISP_WIDTH + i;
+      int byte = offset >> 3;
+      int bit = offset & 7;
+      if (color) video_framebuffer[byte] |= bit;
+      else video_framebuffer[byte] &= ~bit;
+    }
+  }
+}
+
+void fb_draw_char(int x, int y, uint8_t color, char c) {
+  int offset = ((uint8_t)c) * GLYPH_HEIGHT;
+  for (int j = 0; j < GLYPH_HEIGHT; j++) {
+    for (int i = 0; i < GLYPH_WIDTH; i++) {
+      int mask = 1 << i;
+      if (y + j >= 0 && y + j < DISP_HEIGHT && x + i >= 0 && x + i < DISP_WIDTH) {
+        if (font.glyphs[offset] & mask) {
+          int fb_offset = (y + j) * DISP_WIDTH + (x + i);
+          int byte = fb_offset >> 3;
+          int bit = fb_offset & 7;
+          if (color) video_framebuffer[byte] |= bit;
+          else video_framebuffer[byte] &= ~bit;
+        }
+      }
+    }
+    offset++;
+  }
+}
+
+void fb_draw_text(int x, int y, uint8_t color, const char* text) {
+  while(*text) {
+    fb_draw_char(x, y, color, *text);
+    x += font.glyph_width;
+    if (x > DISP_WIDTH) return;
+    text ++;
+  }
+}
+
+void fb_printf(int x, int y, uint8_t color, const char* format, ...) {
+  char buffer[256];
+  va_list list;
+  va_start(list, format);
+  int result = vsnprintf(buffer, 256, format, list);
+  if (result > -1) {
+    fb_draw_text(x, y, color, buffer);
+  }
 }
 

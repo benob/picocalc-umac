@@ -70,7 +70,7 @@ static const uint8_t key_mapping[256] = {
   [KEY_RSHIFT] = MKC_Command,
   [KEY_CONTROL] = MKC_Control,
 
-  [KEY_a] = MKC_A,
+  [KEY_a] = 255,
   [KEY_b] = MKC_B,
   [KEY_c] = MKC_C,
   [KEY_d] = MKC_D,
@@ -97,7 +97,7 @@ static const uint8_t key_mapping[256] = {
   [KEY_y] = MKC_Y,
   [KEY_z] = MKC_Z,
 
-  [KEY_A] = MKC_A,
+  [KEY_A] = 255,
   [KEY_B] = MKC_B,
   [KEY_C] = MKC_C,
   [KEY_D] = MKC_D,
@@ -193,8 +193,8 @@ static const uint8_t key_mapping[256] = {
   [KEY_QMARK] = MKC_Slash,
   [KEY_SLASH] = MKC_Slash,
 
-  [KEY_CPAREN] = MKC_9,
-  [KEY_OPAREN] = MKC_0,
+  [KEY_OPAREN] = MKC_9,
+  [KEY_CPAREN] = MKC_0,
 
   [KEY_RIGHTBRACKET] = MKC_RightBracket,
   [KEY_RIGHTBRACE] = MKC_RightBracket,
