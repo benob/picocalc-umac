@@ -17,7 +17,6 @@ Cmake options:
 - `-DMEMSIZE=128`: size of the mac memory
 - `-DDISP_WIDTH=512`: display width, will pan if not larger than physical display
 - `-DDISP_HEIGHT=342`: display height, will pan if not larger than physical display
-- `-DUSE_PICOCALC_RES=OFF`: shortcut to use resolution 320x320
 - `-DUSE_PSRAM=OFF`: use PSRAM instead of SRAM on a compatible device (the PSRAM included on PicoCalc is not compatible)
 - `-DPSRAM_PIN=47`: CS pin for PSRAM (only GPIO pins 0, 8, 19, 47 can be used with RP2350)
 - `-DUSE_SD=ON`: read discs from SD card (umac0.img and umac1.img), if not set, you need to provide the path to a disc to include in flash

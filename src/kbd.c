@@ -67,8 +67,9 @@ static const uint8_t key_mapping[256] = {
 
   [KEY_ALT] = MKC_Option,
   [KEY_LSHIFT] = MKC_Shift,
-  [KEY_RSHIFT] = MKC_Command,
-  [KEY_CONTROL] = MKC_Control,
+  [KEY_RSHIFT] = MKC_Control,
+  /*[KEY_CONTROL] = MKC_Control,*/
+  [KEY_CONTROL] = MKC_Command,
 
   [KEY_a] = 255,
   [KEY_b] = MKC_B,

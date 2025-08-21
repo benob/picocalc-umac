@@ -95,8 +95,9 @@ void video_update() {
 
   if (video_framebuffer == NULL) return;
 
-  int mouse_x = RAM_RD16(0x82a);
+  int mouse_x = RAM_RD16(0x82a); // directly read mouse coordinates from emulator
   int mouse_y = RAM_RD16(0x828);
+
   // adjust display position
   if (mouse_x >= 0 && mouse_x < DISP_WIDTH && mouse_y >= 0 && mouse_y < DISP_HEIGHT) {
     while (mouse_x < video_offset_x && video_offset_x > 0) video_offset_x--;

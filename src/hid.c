@@ -34,12 +34,22 @@ int cursor_button = 0;
 int mouse_mode = 1;
 
 static int slow = 0, mouse_delta_x = 0, mouse_delta_y = 0;
+//static int left_shift_pressed = 0;
+//static int right_shift_pressed = 0;
 
 void hid_app_task(void)
 {
   input_event_t event = keyboard_poll();
-  if (event.code == KEY_RSHIFT && event.state == KEY_STATE_PRESSED) mouse_mode = 1 - mouse_mode;
+  if (/*!left_shift_pressed &&*/ event.code == KEY_RSHIFT && event.state == KEY_STATE_PRESSED) mouse_mode = 1 - mouse_mode;
   else if (event.code != 0) {
+    /*if (event.code == KEY_LSHIFT) {
+      if (event.state == KEY_STATE_PRESSED) left_shift_pressed = 1;
+      else if (event.state == KEY_STATE_RELEASED) left_shift_pressed = 0;
+    }
+    if (event.code == KEY_RSHIFT) {
+      if (event.state == KEY_STATE_PRESSED) right_shift_pressed = 1;
+      else if (event.state == KEY_STATE_RELEASED) right_shift_pressed = 0;
+    }*/
     if (mouse_mode) {
       if (event.state == KEY_STATE_PRESSED) {
         switch (event.code) {
@@ -48,7 +58,10 @@ void hid_app_task(void)
           case KEY_UP: mouse_delta_y = -1; break;
           case KEY_DOWN: mouse_delta_y = 1; break;
           case KEY_ENTER: cursor_button = 1; break;
-          //case KEY_SPACE: slow = 1 - slow; break;
+          case KEY_SPACE: break;
+          default:
+            kbd_queue_push(event.code, event.state == KEY_STATE_PRESSED);
+            break;
         }
       } else if (event.state == KEY_STATE_RELEASED) {
         switch (event.code) {
@@ -58,6 +71,9 @@ void hid_app_task(void)
           case KEY_DOWN: mouse_delta_y = 0; break;
           case KEY_ENTER: cursor_button = 0; break;
           case KEY_SPACE: slow = 1 - slow; break;
+          default:
+            kbd_queue_push(event.code, event.state == KEY_STATE_PRESSED);
+            break;
         }
       }
     } else {

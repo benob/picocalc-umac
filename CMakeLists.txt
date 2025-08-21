@@ -33,7 +33,6 @@ set(MEMSIZE 128 CACHE STRING "Memory size, in KB (up to 208 on RP2040, 384 on RP
 option(USE_PSRAM "Use PSRAM (only works with RP2350 chips with PSRAM connected to 0, 8, 19, 47)" OFF)
 set(PSRAM_PIN 47 CACHE STRING "Pin for PSRAM (47 for Pimoroni pico plus 2)")
 
-option(USE_PICOCALC_RES "Video uses native lcd (320x320) resolution" OFF)
 set(DISP_WIDTH 512 CACHE STRING "Display width, can be customized, scrolled if larger than actual display")
 set(DISP_HEIGHT 342 CACHE STRING "Display height, can be customized, scrolled if larger than actual display")
 
@@ -93,11 +92,6 @@ else()
   set(NOSD_SOURCES "umac-disc.h")
 endif()
 
-if (USE_PICOCALC_RES)
-  add_compile_definitions(USE_PICOCALC_RES=1)
-  set(DISP_WIDTH=320)
-  set(DISP_HEIGHT=320)
-endif()
 add_compile_definitions(DISP_WIDTH=${DISP_WIDTH})
 add_compile_definitions(DISP_HEIGHT=${DISP_HEIGHT})
 
